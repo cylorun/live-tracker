@@ -2,7 +2,7 @@ package com.cylorun.gui.components;
 
 import com.cylorun.Tracker;
 import com.google.gson.JsonObject;
-import com.cylorun.gui.RunEditor;
+import com.cylorun.gui.editor.RunEditor;
 import com.cylorun.io.TrackerOptions;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

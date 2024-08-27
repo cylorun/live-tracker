@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunEditor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/TrackerFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/TrackerFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/utils/APIUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/utils/APIUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/RunEditor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/components/RunRecordEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/components/RunRecordEntry.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +40,13 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -57,6 +63,7 @@
     "Gradle.live-tracker [:TrackerAppLaunch.main()].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "feature/basic-editor-view",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/alfgrimur/IdeaProjects/live-tracker",
@@ -124,7 +131,7 @@
       <workItem from="1724715079353" duration="31000" />
       <workItem from="1724715179056" duration="37000" />
       <workItem from="1724715285262" duration="450000" />
-      <workItem from="1724749963781" duration="2757000" />
+      <workItem from="1724749963781" duration="5856000" />
     </task>
     <servers />
   </component>

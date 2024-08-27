@@ -1,6 +1,7 @@
-package com.cylorun.gui;
+package com.cylorun.gui.editor;
 
 import com.cylorun.Tracker;
+import com.cylorun.gui.TrackerFrame;
 import com.cylorun.gui.components.MultiChoiceOptionField;
 import com.cylorun.gui.components.TextEditor;
 import com.cylorun.gui.components.TextOptionField;
@@ -25,11 +26,7 @@ import java.util.concurrent.ExecutionException;
 
 public class RunEditor extends JPanel {
     private final JsonObject record;
-    private final JPanel configPanel;
-    private final MultiChoiceOptionField columnField;
-    private TextOptionField valueField;
-    private TextEditor textEditorField;
-    private ColorPicker colorChooser;
+    private JPanel configPanel;
     private final JButton saveButton;
     private JButton viewButton;
     private JsonObject runData;
@@ -50,59 +47,21 @@ public class RunEditor extends JPanel {
             throw new RuntimeException(e);
         }
 
-        topBar.add(backButton);
-        topBar.add(Box.createRigidArea(new Dimension(10, 0)));
-        topBar.add(new JLabel(String.format("Run %s", this.record.get("run_id").getAsInt())));
-
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
         this.viewButton = new JButton(options.advanced_editor_view ? "Basic" : "Advanced");
         this.viewButton.addActionListener((e) -> this.toggleViewType());
+
+        topBar.add(backButton);
+        topBar.add(Box.createRigidArea(new Dimension(10, 0)));
+        topBar.add(new JLabel(String.format("Run %s", this.record.get("run_id").getAsInt())));
         topBar.add(Box.createHorizontalGlue());
         topBar.add(this.viewButton, BorderLayout.EAST);
-
         this.add(topBar, BorderLayout.NORTH);
-
-        this.configPanel = new JPanel();
-        this.configPanel.setLayout(new BoxLayout(this.configPanel, BoxLayout.Y_AXIS));
+        this.toggleViewType();
         this.add(new JScrollPane(this.configPanel), BorderLayout.CENTER);
 
         this.saveButton = new JButton("Save");
         this.saveButton.setEnabled(false);
-
-        this.colorChooser = new ColorPicker();
-        this.textEditorField = new TextEditor((val) -> this.checkForChanges());
-        this.colorChooser.addConsumer((newCol -> this.checkForChanges()));
-
-        this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
-            this.valueField.setVisible(false);
-            this.textEditorField.setVisible(false);
-            if (val.equals("notes")) {
-                this.textEditorField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
-                this.textEditorField.setVisible(true);
-            } else {
-                this.valueField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
-                this.valueField.setVisible(true);
-            }
-            this.checkForChanges();
-        });
-
-        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> {
-            if (this.runData == null) {
-                return;
-            }
-            this.checkForChanges();
-        });
-
-        this.configPanel.add(this.columnField);
-        this.configPanel.add(this.valueField);
-        this.configPanel.add(this.textEditorField);
-        this.configPanel.add(new JSeparator(JSeparator.HORIZONTAL));
-        this.configPanel.add(new JLabel("Run Color"));
-        this.configPanel.add(this.colorChooser);
-        this.configPanel.add(new JSeparator(JSeparator.HORIZONTAL));
-        this.configPanel.add(Box.createVerticalStrut(10));
-        this.configPanel.add(this.saveButton);
-        this.configPanel.add(Box.createVerticalStrut(10));
 
         this.saveButton.addActionListener((e -> this.handleSaveButtonAction()));
 
@@ -117,13 +76,20 @@ public class RunEditor extends JPanel {
         TrackerOptions.save();
 
         this.viewButton.setText(options.advanced_editor_view ? "Basic" : "Advanced");
+        this.setEditorView(options.advanced_editor_view ?  new AdvancedEditorView(this.runData, (hasChanges) -> this.onChange(hasChanges)) : new BasicEditorView(this.runData, (hasChanges) -> this.onChange(hasChanges)));
     }
 
-    private void checkForChanges() {
-        boolean hasColorChanged = !this.prevColor.equals(this.colorChooser.getCurrentColor());
-        boolean hasValueChanged = !this.valueField.getValue().equals(JSONUtil.getOptionalString(this.runData,this.columnField.getValue()).orElse(""));
-        this.saveButton.setEnabled(hasColorChanged || hasValueChanged);
+    private void onChange(boolean hasChanges) {
+        this.saveButton.setEnabled(hasChanges);
     }
+
+    private void setEditorView(JPanel panel) {
+        this.configPanel = panel;
+
+        this.repaint();
+        this.revalidate();
+    }
+
 
     private void handleSaveButtonAction() {
         if (!this.prevColor.equals(this.colorChooser.getCurrentColor()) && JOptionPane.showConfirmDialog(
