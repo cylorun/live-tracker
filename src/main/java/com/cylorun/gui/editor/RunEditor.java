@@ -26,11 +26,11 @@ import java.util.concurrent.ExecutionException;
 
 public class RunEditor extends JPanel {
     private final JsonObject record;
-    private JPanel configPanel;
     private final JButton saveButton;
     private JButton viewButton;
     private JsonObject runData;
     private boolean isFetching = false;
+    private EditorView editorView;
     private Color prevColor = Color.WHITE;
 
     public RunEditor(JsonObject runRecord) {
@@ -48,6 +48,7 @@ public class RunEditor extends JPanel {
         }
 
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
+        this.editorView = EditorView.getView(this.runData, (hasChanges) -> this.onChange(hasChanges));
         this.viewButton = new JButton(options.advanced_editor_view ? "Basic" : "Advanced");
         this.viewButton.addActionListener((e) -> this.toggleViewType());
 
@@ -57,8 +58,7 @@ public class RunEditor extends JPanel {
         topBar.add(Box.createHorizontalGlue());
         topBar.add(this.viewButton, BorderLayout.EAST);
         this.add(topBar, BorderLayout.NORTH);
-        this.toggleViewType();
-        this.add(new JScrollPane(this.configPanel), BorderLayout.CENTER);
+        this.add(new JScrollPane(this.editorView), BorderLayout.CENTER);
 
         this.saveButton = new JButton("Save");
         this.saveButton.setEnabled(false);
@@ -76,15 +76,18 @@ public class RunEditor extends JPanel {
         TrackerOptions.save();
 
         this.viewButton.setText(options.advanced_editor_view ? "Basic" : "Advanced");
-        this.setEditorView(options.advanced_editor_view ?  new AdvancedEditorView(this.runData, (hasChanges) -> this.onChange(hasChanges)) : new BasicEditorView(this.runData, (hasChanges) -> this.onChange(hasChanges)));
+        this.setEditorView(options.advanced_editor_view ?
+                new AdvancedEditorView(this.runData, this.record, (hasChanges) -> this.onChange(hasChanges)) :
+                new BasicEditorView(this.runData, this.record, (hasChanges) -> this.onChange(hasChanges))
+        );
     }
 
     private void onChange(boolean hasChanges) {
         this.saveButton.setEnabled(hasChanges);
     }
 
-    private void setEditorView(JPanel panel) {
-        this.configPanel = panel;
+    private void setEditorView(EditorView view) {
+        this.editorView = view;
 
         this.repaint();
         this.revalidate();
@@ -92,37 +95,7 @@ public class RunEditor extends JPanel {
 
 
     private void handleSaveButtonAction() {
-        if (!this.prevColor.equals(this.colorChooser.getCurrentColor()) && JOptionPane.showConfirmDialog(
-                null,
-                "Change color for run " + this.record.get("run_id").getAsString(),
-                "confirm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
-        ) {
-            this.prevColor = this.colorChooser.getCurrentColor();
-            this.editRun("color", this.colorChooser.getColorString());
-            Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
-            this.checkForChanges();
-        } else {
-            int option = JOptionPane.showConfirmDialog(
-                    null,
-                    String.format("Change %s from %s to %s for run %s?",
-                            this.columnField.getValue(),
-                            JSONUtil.getOptionalString(this.runData, this.columnField.getValue()).orElse("\" \""),
-                            this.columnField.getValue().equals("notes") ? this.textEditorField.getText() : this.valueField.getValue(),
-                            this.record.get("run_id").getAsString()),
-                    "Confirmation",
-                    JOptionPane.YES_NO_OPTION);
 
-            if (option == JOptionPane.YES_OPTION) {
-                this.saveButton.setEnabled(false);
-                String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
-                if (this.editRun(this.columnField.getValue(), value)) {
-                    Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
-                } else {
-                    Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
-                }
-            }
-        }
     }
 
     public List<String> getAllValueKeys() {
@@ -131,7 +104,7 @@ public class RunEditor extends JPanel {
         return keys;
     }
 
-    private void extractKeys(JsonObject jsonObject, List<String> keys) {
+    public static void extractKeys(JsonObject jsonObject, List<String> keys) {
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             if (entry.getValue().isJsonPrimitive() || entry.getValue().isJsonNull()) {
                 keys.add(entry.getKey());
@@ -209,10 +182,10 @@ public class RunEditor extends JPanel {
 
                     runData = JSONUtil.flatten(r);
                     String[] values = getAllValueKeys().toArray(new String[0]);
-                    columnField.setOptions(values);
+//                    columnField.setOptions(values);
                     Color color = getColorFromRun(runData);
                     prevColor = color;
-                    colorChooser.setColor(color);
+//                    colorChooser.setColor(color);
                 } catch (InterruptedException | ExecutionException e) {
                     Tracker.log(Level.ERROR, "Failed to process run data: " + e);
                 }

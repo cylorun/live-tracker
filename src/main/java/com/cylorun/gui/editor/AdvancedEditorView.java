@@ -15,7 +15,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class AdvancedEditorView extends JPanel {
+public class AdvancedEditorView extends EditorView {
 
     private final MultiChoiceOptionField columnField;
     private TextOptionField valueField;
@@ -24,7 +24,7 @@ public class AdvancedEditorView extends JPanel {
     private JsonObject runData;
     private Consumer<Boolean> onChange;
     private Color prevColor = Color.WHITE;
-    public AdvancedEditorView(JsonObject runData, Consumer<Boolean> onChange) {
+    public AdvancedEditorView(JsonObject runData, JsonObject runRecord, Consumer<Boolean> onChange) {
         TrackerOptions options = TrackerOptions.getInstance();
         this.onChange = onChange;
         this.runData = runData;
