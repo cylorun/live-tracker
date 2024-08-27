@@ -82,7 +82,7 @@ public class APIUtil {
         }
         String regex = "\\bhttps?:\\/\\/((localhost:\\d+)|(localhost)|([\\w.-]+\\.[a-z]{2,}))(:\\d+)?(\\/[^\\s]*)?\\b";
         Pattern p = Pattern.compile(regex);
-        return p.matcher(url).matches();
+        return p.matcher(url).groupCount() > 1; // bad
     }
 
     public static boolean isValidKey(String key) {

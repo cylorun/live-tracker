@@ -192,11 +192,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
         }));
 
         advancedPanel.add(new BooleanOptionField("Upload to a remote server", options.upload_remote_server, (val) -> {
-            boolean b = val != options.upload_remote_server;
+            boolean hasChange = val != options.upload_remote_server;
             options.upload_remote_server = val;
             TrackerOptions.save();
 
-            if (b) { // shit trips out otherwise
+            if (hasChange) {
                 SwingUtilities.invokeLater(this::reload);
             }
         }));
@@ -205,6 +205,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.tabbedPane.add("Advanced", advancedPanel);
 
         this.onApiKeyChange(TrackerOptions.getInstance().api_key);
+
         this.add(this.tabbedPane);
 
         this.tabbedPane.revalidate();
@@ -234,6 +235,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         if (!TrackerOptions.getInstance().upload_remote_server) {
             return;
         }
+
         SwingUtilities.invokeLater(() -> {
             if (APIUtil.isValidKey(newKey)) {
                 this.tabbedPane.add("Runs", editorPanel);

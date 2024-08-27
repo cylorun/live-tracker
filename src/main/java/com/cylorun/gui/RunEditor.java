@@ -31,13 +31,14 @@ public class RunEditor extends JPanel {
     private TextEditor textEditorField;
     private ColorPicker colorChooser;
     private final JButton saveButton;
+    private JButton viewButton;
     private JsonObject runData;
     private boolean isFetching = false;
     private Color prevColor = Color.WHITE;
 
     public RunEditor(JsonObject runRecord) {
+        TrackerOptions options = TrackerOptions.getInstance();
         this.record = runRecord;
-
         this.setLayout(new BorderLayout());
 
         JPanel topBar = new JPanel();
@@ -54,6 +55,10 @@ public class RunEditor extends JPanel {
         topBar.add(new JLabel(String.format("Run %s", this.record.get("run_id").getAsInt())));
 
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
+        this.viewButton = new JButton(options.advanced_editor_view ? "Basic" : "Advanced");
+        this.viewButton.addActionListener((e) -> this.toggleViewType());
+        topBar.add(Box.createHorizontalGlue());
+        topBar.add(this.viewButton, BorderLayout.EAST);
 
         this.add(topBar, BorderLayout.NORTH);
 
@@ -104,6 +109,14 @@ public class RunEditor extends JPanel {
         this.fetchData();
 
         TrackerFrame.getInstance().setView(this);
+    }
+
+    private void toggleViewType() {
+        TrackerOptions options = TrackerOptions.getInstance();
+        options.advanced_editor_view = !options.advanced_editor_view;
+        TrackerOptions.save();
+
+        this.viewButton.setText(options.advanced_editor_view ? "Basic" : "Advanced");
     }
 
     private void checkForChanges() {

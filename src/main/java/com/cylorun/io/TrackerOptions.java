@@ -33,6 +33,7 @@ public class TrackerOptions {
     public boolean upload_remote_server = false;
     public boolean upload_sheets = true;
     public boolean use_experimental_tracking = false; // use new stats like barters, map and shit
+    public boolean advanced_editor_view = true;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
     public int path_interval = 5; //secs

@@ -5,16 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunEditor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/TrackerFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/TrackerFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/utils/APIUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/utils/APIUtil.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,16 +54,34 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Gradle.live-tracker [:TrackerAppLaunch.main()].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "feature/basic-editor-view",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/alfgrimur/IdeaProjects/live-tracker",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.TrackerAppLaunch">
+    <configuration name="TrackerAppLaunch" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.cylorun.TrackerAppLaunch" />
+      <module name="live-tracker.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.cylorun.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="live-tracker [dependencies]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -93,6 +106,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.TrackerAppLaunch" />
         <item itemvalue="Gradle.live-tracker [dependencies]" />
       </list>
     </recent_temporary>
@@ -109,6 +123,8 @@
       <workItem from="1724715031337" duration="39000" />
       <workItem from="1724715079353" duration="31000" />
       <workItem from="1724715179056" duration="37000" />
+      <workItem from="1724715285262" duration="450000" />
+      <workItem from="1724749963781" duration="2757000" />
     </task>
     <servers />
   </component>
