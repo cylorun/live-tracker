@@ -2,16 +2,12 @@ package com.cylorun.gui.editor;
 
 import com.cylorun.Tracker;
 import com.cylorun.gui.TrackerFrame;
-import com.cylorun.gui.components.MultiChoiceOptionField;
-import com.cylorun.gui.components.TextEditor;
-import com.cylorun.gui.components.TextOptionField;
+import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.JSONUtil;
 import com.cylorun.utils.ResourceUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.cylorun.gui.components.ColorPicker;
-import com.cylorun.io.TrackerOptions;
 import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
@@ -27,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class RunEditor extends JPanel {
     private final JsonObject record;
     private final JButton saveButton;
-    private JButton viewButton;
+    private final JButton viewButton;
     private JsonObject runData;
     private boolean isFetching = false;
     private EditorView editorView;
@@ -48,7 +44,7 @@ public class RunEditor extends JPanel {
         }
 
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
-        this.editorView = EditorView.getView(this.runData, (hasChanges) -> this.onChange(hasChanges));
+        this.editorView = EditorView.getView(this.runData, this.record, this::onChange);
         this.viewButton = new JButton(options.advanced_editor_view ? "Basic" : "Advanced");
         this.viewButton.addActionListener((e) -> this.toggleViewType());
 

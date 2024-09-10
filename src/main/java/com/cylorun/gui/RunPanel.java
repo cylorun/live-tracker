@@ -78,7 +78,7 @@ public class RunPanel extends JPanel {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(TrackerOptions.getInstance().api_url + "/runs/recent")
+                .url(TrackerOptions.getInstance().api_url + "/runs/today")
                 .build();
 
         new SwingWorker<JsonArray, Void>() {
@@ -120,6 +120,7 @@ public class RunPanel extends JPanel {
                             runRecordPanel.add(entryPanel);
                         }
                     }
+
                     runRecordPanel.revalidate();
                     runRecordPanel.repaint();
                     toggleButtonLoading();

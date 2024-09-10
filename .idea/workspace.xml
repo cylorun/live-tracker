@@ -6,10 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/AdvancedEditorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/AdvancedEditorView.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/BasicEditorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/BasicEditorView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/RunPanel.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/EditorView.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/EditorView.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/RunEditor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/gui/editor/RunEditor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +55,9 @@
   &quot;associatedIndex&quot;: 3
 }</component>
   <component name="ProjectId" id="2lDWCM6CSgEA9MAqWiIlrYf8IEo" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -62,6 +65,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.live-tracker [:TrackerAppLaunch.main()].executor": "Run",
+    "Gradle.live-tracker [:tst.main()].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
@@ -76,7 +80,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.TrackerAppLaunch">
+  <component name="RunManager">
     <configuration name="TrackerAppLaunch" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.cylorun.TrackerAppLaunch" />
       <module name="live-tracker.main" />
@@ -112,6 +116,10 @@
       <RunAsTest>false</RunAsTest>
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.TrackerAppLaunch" />
+      <item itemvalue="Gradle.live-tracker [dependencies]" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.TrackerAppLaunch" />

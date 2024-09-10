@@ -340,14 +340,14 @@ public class Run extends HashMap<String, Object> {
             pickedUp = this.stats.get("minecraft:picked_up").getAsJsonObject();
         } else {
             for (JsonElement e : barters) {
-                String itemName = "trade_" + e.getAsString().split(":")[1];
+                String itemName = e.getAsString().split(":")[1];
                 res.put(itemName, "0");
             }
             return res;
         }
 
         for (JsonElement barterItem : barters) {
-            String itemName = "trade_" + barterItem.getAsString().split(":")[1];
+            String itemName = barterItem.getAsString().split(":")[1];
             if (pickedUp.has(barterItem.getAsString())) {
                 int diff = 0;
                 if (this.worldFile.hungerResetHandler.itemDiffs.containsKey(barterItem.getAsString())) {
@@ -390,9 +390,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement mob : mobs) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:killed").get(mob.getAsString()).getAsString();
-                res.put("killed_" + mob.getAsString().split(":")[1], val);
+                res.put(mob.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put("killed_" + mob.getAsString().split(":")[1], "0");
+                res.put(mob.getAsString().split(":")[1], "0");
             }
         }
         return res;
@@ -405,9 +405,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement food : foods) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:used").get(food.getAsString()).getAsString();
-                res.put("eaten_" + food.getAsString().split(":")[1], val);
+                res.put(food.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put("eaten_" + food.getAsString().split(":")[1], "0");
+                res.put(food.getAsString().split(":")[1], "0");
             }
         }
         return res;
@@ -418,7 +418,7 @@ public class Run extends HashMap<String, Object> {
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
         for (JsonElement method : methods) {
-            String itemName = "travel_" + method.getAsString().split(":")[1].replace("_one_cm","");
+            String itemName = method.getAsString().split(":")[1].replace("_one_cm","");
             try {
                 String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
                 res.put(itemName, val);

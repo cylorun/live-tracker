@@ -11,7 +11,7 @@ public class EditorView extends JPanel {
 
     }
 
-    public static EditorView getView(JsonObject runData, Consumer<Boolean> onChange) {
-        return TrackerOptions.getInstance().advanced_editor_view ? new AdvancedEditorView(runData, onChange) : new BasicEditorView(runData, onChange);
+    public static EditorView getView(JsonObject runData, JsonObject runRecord, Consumer<Boolean> onChange) {
+        return TrackerOptions.getInstance().advanced_editor_view ? new AdvancedEditorView(runData, runRecord, onChange) : new BasicEditorView(runData, runRecord, onChange);
     }
 }
