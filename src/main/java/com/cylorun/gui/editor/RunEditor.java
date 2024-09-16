@@ -3,6 +3,7 @@ package com.cylorun.gui.editor;
 import com.cylorun.Tracker;
 import com.cylorun.gui.TrackerFrame;
 import com.cylorun.io.TrackerOptions;
+import com.cylorun.io.dto.RunRecord;
 import com.cylorun.utils.JSONUtil;
 import com.cylorun.utils.ResourceUtil;
 import com.google.gson.JsonElement;
@@ -21,15 +22,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class RunEditor extends JPanel {
-    private final JsonObject record;
+    private final RunRecord record;
     private final JButton saveButton;
     private final JButton viewButton;
-    private JsonObject runData;
     private boolean isFetching = false;
     private EditorView editorView;
     private Color prevColor = Color.WHITE;
 
-    public RunEditor(JsonObject runRecord) {
+    public RunEditor(RunRecord runRecord) {
         TrackerOptions options = TrackerOptions.getInstance();
         this.record = runRecord;
         this.setLayout(new BorderLayout());
@@ -44,7 +44,7 @@ public class RunEditor extends JPanel {
         }
 
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
-        this.editorView = EditorView.getView(this.runData, this.record, this::onChange);
+        this.editorView = EditorView.getView(this.record, this.record, this::onChange);
         this.viewButton = new JButton(options.advanced_editor_view ? "Basic" : "Advanced");
         this.viewButton.addActionListener((e) -> this.toggleViewType());
 

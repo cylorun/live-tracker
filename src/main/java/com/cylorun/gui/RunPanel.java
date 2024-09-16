@@ -3,11 +3,12 @@ package com.cylorun.gui;
 import com.cylorun.Tracker;
 import com.cylorun.gui.components.ActionButton;
 import com.cylorun.gui.components.RunRecordEntry;
+import com.cylorun.io.dto.RunRecord;
 import com.cylorun.utils.APIUtil;
 import com.cylorun.utils.ResourceUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import com.cylorun.io.TrackerOptions;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -81,9 +82,9 @@ public class RunPanel extends JPanel {
                 .url(TrackerOptions.getInstance().api_url + "/runs/today")
                 .build();
 
-        new SwingWorker<JsonArray, Void>() {
+        new SwingWorker<RunRecord[], Void>() {
             @Override
-            protected JsonArray doInBackground() {
+            protected RunRecord[] doInBackground() {
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
                         Tracker.log(Level.ERROR, "Failed to fetch run data, status code: " + response.code());
@@ -93,7 +94,10 @@ public class RunPanel extends JPanel {
 
                     String jsonString = response.body().string();
                     response.close();
-                    return JsonParser.parseString(jsonString).getAsJsonArray();
+                    ObjectMapper mp = new ObjectMapper();
+
+                    RunRecord[] runs = mp.convertValue(jsonString, RunRecord[].class);
+                    return runs;
                 } catch (Exception e) {
                     Tracker.log(Level.ERROR, "Failed to fetch run data: " + e.getMessage());
                     return null;
@@ -104,7 +108,7 @@ public class RunPanel extends JPanel {
             protected void done() {
                 isFetching = false;
                 try {
-                    JsonArray runs = get();
+                    RunRecord[] runs = get();
                     runRecordPanel.removeAll();
                     if (runs == null) {
                         runRecordPanel.add(new JLabel("Something went wrong"));
@@ -112,8 +116,8 @@ public class RunPanel extends JPanel {
                     }  else if(runs.equals(new JsonArray())) {
                         runRecordPanel.add(new JLabel("There are no runs to display"));
                     } else {
-                        for (JsonElement run : runs) {
-                            RunRecordEntry entry = new RunRecordEntry(run.getAsJsonObject());
+                        for (RunRecord run : runs) {
+                            RunRecordEntry entry = new RunRecordEntry(run);
                             JPanel entryPanel = new JPanel(new BorderLayout());
                             entryPanel.add(entry, BorderLayout.NORTH);
                             entryPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));

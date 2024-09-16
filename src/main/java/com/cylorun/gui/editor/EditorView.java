@@ -1,6 +1,7 @@
 package com.cylorun.gui.editor;
 
 import com.cylorun.io.TrackerOptions;
+import com.cylorun.io.dto.RunRecord;
 import com.google.gson.JsonObject;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ public class EditorView extends JPanel {
 
     }
 
-    public static EditorView getView(JsonObject runData, JsonObject runRecord, Consumer<Boolean> onChange) {
-        return TrackerOptions.getInstance().advanced_editor_view ? new AdvancedEditorView(runData, runRecord, onChange) : new BasicEditorView(runData, runRecord, onChange);
+    public static EditorView getView(RunRecord runRecord,, Consumer<Boolean> onChange) {
+        return TrackerOptions.getInstance().advanced_editor_view ? new AdvancedEditorView(runRecord, onChange) : new BasicEditorView(runRecord, onChange);
     }
 }

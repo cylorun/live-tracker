@@ -1,6 +1,8 @@
 package com.cylorun.io.dto;
 
-public class RunDTO {
+import java.lang.reflect.Field;
+
+public class RunRecord {
     public int run_id;
     public long date_played_est;
     public long rta;
@@ -38,6 +40,11 @@ public class RunDTO {
     public Kills kills;
     public Foods foods;
     public Travel travel;
+
+
+    public Field getField(String name) throws NoSuchFieldException {
+        return this.getClass().getField(name);
+    }
 
     @Override
     public String toString() {

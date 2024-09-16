@@ -5,6 +5,7 @@ import com.cylorun.gui.components.MultiChoiceOptionField;
 import com.cylorun.gui.components.TextEditor;
 import com.cylorun.gui.components.TextOptionField;
 import com.cylorun.io.TrackerOptions;
+import com.cylorun.io.dto.RunRecord;
 import com.cylorun.utils.JSONUtil;
 import com.google.gson.JsonObject;
 
@@ -20,18 +21,18 @@ public class BasicEditorView extends EditorView {
     private TextOptionField valueField;
     private TextEditor textEditorField;
     private ColorPicker colorChooser;
-    private JsonObject runData;
+    private RunRecord runRecord;
     private Consumer<Boolean> onChange;
     private Color prevColor = Color.WHITE;
 
     // the record won't be null, while the runData will need to be fetched later
-    public BasicEditorView(JsonObject runData, JsonObject runRecord, Consumer<Boolean> onChange) {
+    public BasicEditorView(RunRecord runRecord, Consumer<Boolean> onChange) {
         TrackerOptions options = TrackerOptions.getInstance();
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        this.runRecord = runRecord;
         this.onChange = onChange;
-        this.runData = runData;
         this.setLayout(new BorderLayout());
 
         this.colorChooser = new ColorPicker();
@@ -42,17 +43,17 @@ public class BasicEditorView extends EditorView {
                 this.valueField.setVisible(false);
                 this.textEditorField.setVisible(false);
                 if (val.equals("notes")) {
-                    this.textEditorField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
+                    this.textEditorField.setValue(JSONUtil.getOptionalString(this.runRecord, val).orElse(""));
                     this.textEditorField.setVisible(true);
                 } else {
-                    this.valueField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
+                    this.valueField.setValue(JSONUtil.getOptionalString(this.runRecord, val).orElse(""));
                     this.valueField.setVisible(true);
                 }
                 this.checkForChanges();
             });
 
-            this.valueField = new TextOptionField("Value", this.runData.get("run_id").getAsString(), (val) -> {
-                if (this.runData == null) {
+            this.valueField = new TextOptionField("Value", this.runRecord.get("run_id").getAsString(), (val) -> {
+                if (this.runRecord == null) {
                     return;
                 }
                 this.checkForChanges();
@@ -71,17 +72,17 @@ public class BasicEditorView extends EditorView {
 
     }
 
-    public void setRunData(JsonObject runData) {
-        this.runData = runData;
+    public void setRunRecord(JsonObject runRecord) {
+        this.runRecord = runRecord;
         List<String> keys = new ArrayList<>();
-        RunEditor.extractKeys(this.runData, keys);
+        RunEditor.extractKeys(this.runRecord, keys);
         String[] values = keys.toArray(new String[0]);
         this.columnField.setOptions(values);
     }
 
     private void checkForChanges() {
         boolean hasColorChanged = !this.prevColor.equals(this.colorChooser.getCurrentColor());
-        boolean hasValueChanged = !this.valueField.getValue().equals(JSONUtil.getOptionalString(this.runData, this.columnField.getValue()).orElse(""));
+        boolean hasValueChanged = !this.valueField.getValue().equals(JSONUtil.getOptionalString(this.runRecord, this.columnField.getValue()).orElse(""));
         this.onChange.accept(hasColorChanged || hasValueChanged); // returns if the save button should be enabled
     }
 }

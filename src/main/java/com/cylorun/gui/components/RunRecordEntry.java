@@ -1,6 +1,7 @@
 package com.cylorun.gui.components;
 
 import com.cylorun.Tracker;
+import com.cylorun.io.dto.RunRecord;
 import com.google.gson.JsonObject;
 import com.cylorun.gui.editor.RunEditor;
 import com.cylorun.io.TrackerOptions;
@@ -19,19 +20,19 @@ public class RunRecordEntry extends JPanel {
     private final JButton deleteButton;
     private final JButton editButton;
     private final JButton viewButton;
-    private final JsonObject record;
+    private final RunRecord record;
 
-    public RunRecordEntry(JsonObject record) {
+    public RunRecordEntry(RunRecord record) {
         this.setLayout(new BorderLayout());
         this.deleteButton = new JButton("Delete");
         this.editButton = new JButton("Edit");
         this.viewButton = new JButton("View");
         this.record = record;
-        Date date = new Date(this.record.get("date_played_est") == null || !this.record.get("date_played_est").isJsonPrimitive() ? 0 : this.record.get("date_played_est").getAsLong());
+        Date date = new Date(this.record.date_played_est);
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 
-        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", this.record.get("run_id") == null || !this.record.get("run_id").isJsonPrimitive() ? "Unknown" : this.record.get("run_id").getAsInt()));
-        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), this.record.get("world_name") == null || !this.record.get("world_name").isJsonPrimitive() ? "Unknown" : this.record.get("world_name").getAsString()));
+        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", this.record.run_id));
+        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), this.record.world_name));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -50,13 +51,13 @@ public class RunRecordEntry extends JPanel {
         this.deleteButton.addActionListener((e -> {
             int option = JOptionPane.showConfirmDialog(
                     null,
-                    "Are you sure you want to delete run " + this.record.get("run_id").getAsInt(),
+                    "Are you sure you want to delete run " + this.record.run_id,
                     "Confirmation",
                     JOptionPane.YES_NO_OPTION);
 
             if (option == JOptionPane.YES_OPTION) {
                 if (!this.deleteRun()) {
-                    Tracker.log(Level.WARN, "Failed to delete run " + this.record.get("run_id").getAsInt());
+                    Tracker.log(Level.WARN, "Failed to delete run " + this.record.run_id);
                     JOptionPane.showMessageDialog(null, "Failed to delete run");
                 }
             }
