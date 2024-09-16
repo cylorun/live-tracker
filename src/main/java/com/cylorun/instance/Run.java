@@ -43,7 +43,7 @@ public class Run extends HashMap<String, Object> {
         this.stats = this.getStats();
     }
 
-    public Run gatherAll() {
+    public Run gatherAllData() {
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
                 "rsg.enter_bastion",
@@ -85,13 +85,17 @@ public class Run extends HashMap<String, Object> {
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
-        if (TrackerOptions.getInstance().use_experimental_tracking) {
+        if (TrackerOptions.getInstance().use_experimental_tracking &&
+                (this.worldFile.strongholdTracker != null && this.worldFile.hungerResetHandler != null))
+        {
             this.putAll(this.getFinalBarters());
             this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
             this.put("explosives_used", this.getExplosivesUsed());
         }
+
         this.put("seed", String.valueOf(this.worldFile.getSeed()));
+        this.put("recent_version","false");
 
         this.hasData = true;
         return this;
@@ -242,7 +246,9 @@ public class Run extends HashMap<String, Object> {
                 if (netherIgt < ironIgt) {
                     ironSource = "Nether";
                 }
-            } else if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
+            }
+            // if furnace crafted and mined iron ore
+            if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
                     stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:iron_ore")) {
                 ironSource = "Structureless";
             }
@@ -330,7 +336,10 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getFinalBarters() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
-        Assert.isNotNull(url, "Resource not found: events/tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
 
         JsonObject o = ResourceUtil.loadJsonResource(url);
         JsonArray barters = o.get("TRACKED_BARTERS").getAsJsonArray();
@@ -365,9 +374,12 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getMiscStats() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
 
         JsonObject checks = ResourceUtil.loadJsonResource(url).getAsJsonObject("MISC_CHECKS");
-        Assert.isNotNull(checks);
         Map<String, JsonElement> m = checks.asMap();
 
         for (Map.Entry<String, JsonElement> e : m.entrySet()) {
@@ -386,6 +398,11 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getMobKills() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
+
         JsonArray mobs = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_MOBS");
         for (JsonElement mob : mobs) {
             try {
@@ -401,6 +418,11 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getFoods() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: events/tracked.json");
+            return Map.of();
+        }
+
         JsonArray foods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_FOODS");
         for (JsonElement food : foods) {
             try {
@@ -416,12 +438,17 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getTravelled() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: events/tracked.json");
+            return Map.of();
+        }
+
         JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
         for (JsonElement method : methods) {
             String itemName = method.getAsString().split(":")[1].replace("_one_cm","");
             try {
                 String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
-                res.put(itemName, val);
+                res.put(itemName,  String.valueOf((Integer.parseInt(val) / 100)));
             } catch (Exception e) {
                 res.put(itemName, "0");
             }
@@ -435,14 +462,23 @@ public class Run extends HashMap<String, Object> {
 
     public boolean shouldPush() {
         TrackerOptions options = TrackerOptions.getInstance();
-        if (options.only_track_completions) {
-            return this.hasFinished();
+
+        if (this.stats == null) {
+            Tracker.log(Level.ERROR, "Stats undefined, will not push");
+            return false;
         }
 
-        Assert.isNotNull(this.stats, "Stats is null");
-        String runType = this.recordFile.get("run_type").getAsString();
-        if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice
+        if (options.detect_ssg && this.recordFile.get("run_type").getAsString().equals("set_seed")) {
+            Tracker.log(Level.INFO, "Set seed detected, will not push");
             return false;
+        }
+
+        if (this.recordFile.get("category").getAsString().equals("pratice_world") || this.recordFile.get("category").getAsString().equals("practice_world")) {  // yes its pratice not practice
+            return false;
+        }
+
+        if (options.only_track_completions) {
+            return this.hasFinished();
         }
 
         return this.adv.has("minecraft:story/smelt_iron") || this.adv.has("minecraft:story/enter_the_nether");
@@ -456,7 +492,7 @@ public class Run extends HashMap<String, Object> {
         long minutes = remainingSeconds / 60;
         long seconds = remainingSeconds % 60;
 
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.format("%01d:%02d:%02d", hours, minutes, seconds);
     }
 
     public static int getNextRunID() {
@@ -480,8 +516,9 @@ public class Run extends HashMap<String, Object> {
         if (o == null) {
             return 1;
         }
+        JsonObject runObj = o.getAsJsonObject("run");
 
-        return JSONUtil.getOptionalInt(o, "run_id").orElse(1) + 1;
+        return JSONUtil.getOptionalInt(runObj, "run_id").orElse(0) + 1;
     }
     private static int getNextRunIDFromServer() {
         OkHttpClient client = new OkHttpClient();

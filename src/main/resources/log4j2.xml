@@ -4,7 +4,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n"/>
         </Console>
-        <RollingRandomAccessFile name="File" fileName="${sys:user.home}/.LiveTracker/logs/latest.log" filePattern="${sys:user.home}/.LiveTracker/logs/%d{yyyy-MM-dd}-%i.log.gz" >
+        <RollingRandomAccessFile name="File" fileName="${sys:tracker.dir}/logs/latest.log" filePattern="${sys:tracker.dir}/logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level]: %msg%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy/>

@@ -1,7 +1,6 @@
 package com.cylorun.instance;
 
 import com.cylorun.Tracker;
-import com.cylorun.utils.Assert;
 import com.cylorun.utils.ExceptionUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,7 +9,6 @@ import net.querz.nbt.io.NamedTag;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class NBTReader {
@@ -31,12 +29,16 @@ public class NBTReader {
     }
 
     public static NBTReader from(WorldFile file) {
-        Assert.isNotNull(file, "Worldfile object null");
+        if (file == null) {
+            throw new RuntimeException("Null worldfile");
+        }
         return new NBTReader(file.getLevelDatPath());
     }
 
     public static NBTReader from(Path path) {
-        Assert.isNotNull(path, "Worldfile object null");
+        if (path == null) {
+            throw new RuntimeException("Null worldfile");
+        }
         return new NBTReader(path);
     }
 

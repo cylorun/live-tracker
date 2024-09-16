@@ -1,7 +1,5 @@
 package com.cylorun.instance;
 
-import com.cylorun.utils.Assert;
-
 public class SpeedrunEvent {
     public SpeedrunEventType type;
     public Long igt;
@@ -9,10 +7,16 @@ public class SpeedrunEvent {
 
     public SpeedrunEvent(String logString) { // common.multiplayer rta igt
         String[] split = logString.split(" ");
-        Assert.isTrue(split.length == 3, "invalid speedrunevent string");
-        this.type = stringToType(split[0].split("\\.")[1]);
-        this.rta = Long.parseLong(split[1]);
-        this.igt = Long.parseLong(split[2]);
+        if (split.length == 3) {
+            this.type = stringToType(split[0].split("\\.")[1]);
+            this.rta = Long.parseLong(split[1]);
+            this.igt = Long.parseLong(split[2]);
+            return;
+        }
+
+        this.type = SpeedrunEventType.UNKNOWN;
+        this.rta = 0L;
+        this.igt = 0L;
     }
 
     public static SpeedrunEventType stringToType(String s) {
@@ -58,7 +62,8 @@ public class SpeedrunEvent {
         ENTER_STRONGHOLD("rsg.enter_stronghold"),
         ENTER_END("rsg.enter_end"),
         KILL_DRAGON("rsg.kill_dragon"),
-        CREDITS("rsg.credits");
+        CREDITS("rsg.credits"),
+        UNKNOWN("unknown");
 
         public final String label;
 

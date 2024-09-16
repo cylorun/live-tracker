@@ -4,7 +4,7 @@ import com.cylorun.Tracker;
 import com.cylorun.gui.components.*;
 import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.APIUtil;
-import com.cylorun.utils.I18n;
+import com.cylorun.utils.MinecraftTranslations;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
@@ -76,7 +76,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game language", (val) -> {
+        generalPanel.add(new MultiChoiceOptionField(MinecraftTranslations.getSupported().toArray(new String[0]), options.lang, "Game language", (val) -> {
             options.lang = val;
             TrackerOptions.save();
         }));

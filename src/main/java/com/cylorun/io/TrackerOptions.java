@@ -1,11 +1,12 @@
 package com.cylorun.io;
 
 import com.cylorun.Tracker;
+import com.cylorun.TrackerAppLaunch;
+import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.io.sheets.GoogleSheetsService;
-import com.cylorun.utils.I18n;
+import com.cylorun.utils.MinecraftTranslations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.cylorun.io.sheets.GoogleSheetsClient;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
@@ -69,6 +70,9 @@ public class TrackerOptions {
     }
 
     public static Path getTrackerDir() {
+        if (TrackerAppLaunch.args != null && TrackerAppLaunch.args.contains("-portable")) {
+            return Paths.get("data");
+        }
         return Paths.get(System.getProperty("user.home"), ".LiveTracker");
     }
 
@@ -79,25 +83,24 @@ public class TrackerOptions {
             GSON.toJson(instance, writer);
             writer.close();
         } catch (IOException e) {
-            Tracker.log(Level.ERROR, "Failed to write to config file");
-            throw new RuntimeException();
+            Tracker.log(Level.ERROR, "Failed to write to config file: " + e.getMessage());
         }
     }
 
 
     public static void validateSettings() {
+        System.out.println(getTrackerDir().toFile().getAbsolutePath());
         Tracker.log(Level.INFO, "Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
-            JOptionPane.showMessageDialog(null,"credentials.json file not found");
+            JOptionPane.showMessageDialog(null, "credentials.json file not found");
         } else if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
-            JOptionPane.showMessageDialog(null,"sheet_name is not defined");
+            JOptionPane.showMessageDialog(null, "sheet_name is not defined");
         } else if (getInstance().lang == null || getInstance().lang.isEmpty()) {
-            JOptionPane.showMessageDialog(null,"Language not set");
-        } else if (!I18n.isValidLanguage(getInstance().lang)) {
-            JOptionPane.showMessageDialog(null,getInstance().lang + " is not a supported language");
-
+            JOptionPane.showMessageDialog(null, "Language not set");
+        } else if (!MinecraftTranslations.isValidLanguage(getInstance().lang)) {
+            JOptionPane.showMessageDialog(null, getInstance().lang + " is not a supported language");
         } else if (!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
-            JOptionPane.showMessageDialog(null,"Invalid sheet_id or sheet_name");
+            JOptionPane.showMessageDialog(null, "Invalid sheet_id or sheet_name");
         } else {
             Tracker.log(Level.INFO, "Settings good");
         }

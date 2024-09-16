@@ -66,7 +66,7 @@ public class WorldCreationEventHandler extends Thread {
             if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 
-                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
+                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile(), true);
                 // that file will usually not exist unless the world has already been loaded before
                 if (recordJson != null && recordJson.get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
                     Tracker.log(Level.INFO, String.format("Practice world %s detected, will not track", new File(newPath).getName()));

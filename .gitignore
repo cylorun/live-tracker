@@ -2,7 +2,10 @@ credentials.json
 config.json
 tst.java
 tst2.java
-
+data
+logs
+*.log
+*.log.gz
 overworld.png
 the_nether.png
 the_end.png

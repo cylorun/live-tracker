@@ -8,8 +8,8 @@ import com.cylorun.io.TrackerOptions;
 import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.map.ChunkMap;
 import com.cylorun.utils.APIUtil;
+import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.LogReceiver;
-import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,10 +31,14 @@ public class Tracker {
     public static void run() {
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
 
-        java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
-        new Thread(GoogleSheetsClient::setup,"google-sheets-setup").start();
+        new Thread(GoogleSheetsClient::setup, "google-sheets-setup").start();
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+            log(Level.ERROR, "Uncaught exception caught.");
+            onCrash(e);
+        });
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
@@ -54,22 +58,25 @@ public class Tracker {
     }
 
     public static void stop() {
+        log(Level.INFO, "Stopping...");
         System.exit(0);
     }
 
-    public static void handleWorld(WorldFile world) {
+    private static void handleWorld(WorldFile world) {
         TrackerOptions options = TrackerOptions.getInstance();
         world.setCompletionHandler(() -> {
             Run run;
             try {
-                  run = new Run(world);
+                run = new Run(world);
             } catch (IOException e) {
-                Tracker.log(Level.ERROR, "Failed to track run: "+ e.getMessage());
+                Tracker.log(Level.ERROR, "Failed to track run: " + e.getMessage());
+                onCrash(e);
                 return;
             }
-            run.gatherAll();
 
             if (run.shouldPush()) {
+                run.gatherAllData();
+
                 if (options.always_save_locally) {
                     if (run.save(TrackerOptions.getTrackerDir().resolve("local"))) {
                         Tracker.log(Level.INFO, "Saved run locally");
@@ -85,6 +92,9 @@ public class Tracker {
                     } catch (IOException | GeneralSecurityException e) {
                         e.printStackTrace();
                         Tracker.log(Level.ERROR, "Failed to upload run to google sheets: " + e.getMessage());
+                        Tracker.log(Level.ERROR, "Stacktrace: " + ExceptionUtil.toDetailedString(e));
+                    } catch (NullPointerException e) {
+                        Tracker.log(Level.ERROR, "No provided sheet id or name");
                     }
                 }
             }
@@ -97,6 +107,13 @@ public class Tracker {
                 }, "ChunkMapGen").start();
             }
         });
+    }
+
+    public static void onCrash(Throwable t) {
+        log(Level.ERROR, "UNCAUGHT TRACKER ERROR!!!!!!!!!!!");
+        log(Level.ERROR, "MESSSAGE: " + t.getMessage());
+        log(Level.ERROR, "STACKTRACE: " + ExceptionUtil.toDetailedString(t));
+        log(Level.ERROR, "PLEASE REPORT THIS TO @cylorun AND RESTART THE TRACKER");
     }
 
 

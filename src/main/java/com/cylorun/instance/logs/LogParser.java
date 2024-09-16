@@ -4,7 +4,7 @@ import com.cylorun.instance.LogEvent;
 import com.google.gson.JsonObject;
 import com.cylorun.instance.WorldFile;
 import com.cylorun.io.TrackerOptions;
-import com.cylorun.utils.I18n;
+import com.cylorun.utils.MinecraftTranslations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ public class LogParser {
                 }
             }
             if (isChatLogMessage(l)) { // possible duplication bug
-                if (l.contains(I18n.get("chat.respawn_set"))) {
+                if (l.contains(MinecraftTranslations.get("chat.respawn_set"))) {
                     this.lastRespawnSet = getTime(l);
                     this.respawnSet = true;
                     res.add(new LogEvent(LogEvent.LogEventType.RESPAWN_SET, l));
@@ -79,7 +79,7 @@ public class LogParser {
     }
 
     public static boolean containsDeath(String line, String username) {
-        JsonObject deaths = I18n.getALlDeathMessages();
+        JsonObject deaths = MinecraftTranslations.getAllDeathMessages();
         for (String s : deaths.keySet()) {
             String v = deaths.get(s).getAsString().replace("$", username);
             line = line.toLowerCase();
