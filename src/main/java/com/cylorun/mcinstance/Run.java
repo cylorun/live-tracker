@@ -64,7 +64,7 @@ public class Run extends HashMap<String, Object> {
                 "end"
         };
 
-        this.put("run_id", getNextRunNumber());
+        this.put("run_id", getNextRunID());
         this.put("date_played", this.getDate());
         this.put("date_played_2", this.getDate());
         this.put("iron_source", this.getIronSource());
@@ -98,19 +98,6 @@ public class Run extends HashMap<String, Object> {
 
         this.put("seed", String.valueOf(this.worldFile.getSeed()));
         this.put("recent_version","false");
-
-
-
-        /* Reformat the data when uploading to a remote server */
-        if(TrackerOptions.getInstance().use_experimental_tracking && TrackerOptions.getInstance().upload_remote_server) {
-            this.put("run_id", UUID.randomUUID().toString());
-            this.put("run_number", getNextRunNumber());
-            this.put("date_played", this.recordFile.get("date").getAsLong());
-            this.put("rta", this.recordFile.get("final_rta").getAsLong());
-            this.put("igt", this.recordFile.get("final_igt").getAsLong());
-            this.put("retimed_igt", this.recordFile.get("retimed_igt").getAsLong());
-            this.put("record_json", this.recordFile);
-        }
 
         this.hasData = true;
         return this;
@@ -517,9 +504,9 @@ public class Run extends HashMap<String, Object> {
         return String.format("%01d:%02d:%02d", hours, minutes, seconds);
     }
 
-    public static int getNextRunNumber() {
+    public static int getNextRunID() {
         if (TrackerOptions.getInstance().upload_remote_server) {
-            return getNextRunNumberFromServer();
+            return getNextRunIDFromServer();
         }
         return getNextRunIDLocal();
     }
@@ -542,7 +529,7 @@ public class Run extends HashMap<String, Object> {
 
         return JSONUtil.getOptionalInt(runObj, "run_id").orElse(0) + 1;
     }
-    private static int getNextRunNumberFromServer() {
+    private static int getNextRunIDFromServer() {
         OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder()
                 .get()
@@ -552,7 +539,7 @@ public class Run extends HashMap<String, Object> {
         try (Response res = client.newCall(req).execute()) {
             String bodyJson = res.body().string();
             JsonObject jsonData = JsonParser.parseString(bodyJson).getAsJsonObject();
-            JsonElement runIdElement = jsonData.get("run_number");
+            JsonElement runIdElement = jsonData.get("run_id");
             if (runIdElement != null) {
                 return runIdElement.getAsInt() + 1;
             }
