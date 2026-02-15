@@ -12,15 +12,17 @@ public class LogReceiver {
     public static void log(Level level, Object o) {
         String s = String.format("[%s/%s]: %s\n", level.toString(), nowTime(), o.toString());
         if (level != Level.DEBUG || TrackerOptions.getInstance().show_debug) {
-            SwingUtilities.invokeLater(() -> TrackerFrame.getInstance().appendLog(s));
+            SwingUtilities.invokeLater(() -> TrackerFrame.getInstance().appendLog(s, getLevelColor(level)));
         }
     }
 
     public static String getLevelColor(Level l) {
         if (l.equals(Level.WARN)) {
-            return "#c9ab69";
+            return "#fcc419";
         } else if (l.equals(Level.ERROR)) {
-            return "#e83810";
+            return "#ff6b6b";
+        } else if(l.equals(Level.DEBUG)) {
+            return "#808080";
         } else {
             return "#FFFFFF";
         }
