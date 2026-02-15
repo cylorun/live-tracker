@@ -190,7 +190,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 if (res) {
                     JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    Tracker.log(Level.INFO, "Valid API Url");
+                    Tracker.log(Level.INFO, "Valid API URL");
                     JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
                 }
             }, "ApiUrlVerification").start()
@@ -205,17 +205,12 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Generate World Map", options.generate_chunkmap, (val) -> {
-            options.generate_chunkmap = val;
-            TrackerOptions.save();
-        }));
-
         advancedPanel.add(new BooleanOptionField("Experimental Tracking", options.use_experimental_tracking, (val) -> {
             options.use_experimental_tracking = val;
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Upload to a remote server", options.upload_remote_server, (val) -> {
+        advancedPanel.add(new BooleanOptionField("Upload to website", options.upload_remote_server, (val) -> {
             boolean b = val != options.upload_remote_server;
             options.upload_remote_server = val;
             TrackerOptions.save();

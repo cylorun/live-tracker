@@ -69,7 +69,7 @@ public class RunPanel extends JPanel {
         }
 
         if (!APIUtil.isValidUrl(TrackerOptions.getInstance().api_url)) {
-            Tracker.log(Level.WARN, "Invalid API Url");
+            Tracker.log(Level.WARN, "Invalid API URL");
             return;
         }
         this.isFetching = true;
