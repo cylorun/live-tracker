@@ -91,7 +91,14 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
     public long getSeed() {
         try {
-            return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+            String version = NBTReader.from(this).get(NBTReader.VERSION_PATH).replaceAll("\"", ""); // this wraps the string in "" I guess
+
+            if(version.startsWith("1.")) {
+                return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+            } else {
+                return Long.parseLong(NBTReader.from(Paths.get(this.getPath(), "/data/minecraft/world_gen_settings.dat")).get(NBTReader.MODERN_SEED_PATH));
+            }
+
         } catch (NumberFormatException | NullPointerException e) {
             Tracker.log(Level.WARN, "Failed to get the seed");
             return -1;
