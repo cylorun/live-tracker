@@ -22,7 +22,7 @@ public class JSONUtil {
             reader = new FileReader(file);
         } catch (FileNotFoundException e) {
             if (!ignoreWarnings) {
-                Tracker.log(Level.DEBUG, "Trying to read a non existent json file: " + file.getAbsolutePath());
+                Tracker.log(Level.ERROR, "Trying to read a non existent json file: " + file.getAbsolutePath());
             }
             return null;
         } catch (NullPointerException e) {

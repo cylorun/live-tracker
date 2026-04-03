@@ -26,7 +26,6 @@ public class TrackerOptions {
     public boolean detect_ssg = true;
     public boolean only_track_completions = true;
     public boolean show_debug = false;
-    public boolean generate_chunkmap = false;
     public boolean always_save_locally = false;
     public boolean upload_remote_server = false;
     public boolean upload_sheets = true;

@@ -1,21 +1,46 @@
 package com.cylorun.gui;
 
-import com.cylorun.Tracker;
-import com.cylorun.gui.components.*;
-import com.cylorun.TrackerOptions;
-import com.cylorun.utils.APIUtil;
-import com.cylorun.MinecraftTranslations;
-import org.apache.logging.log4j.Level;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+
+import org.apache.logging.log4j.Level;
+
+import com.cylorun.MinecraftTranslations;
+import com.cylorun.Tracker;
+import com.cylorun.TrackerOptions;
+import com.cylorun.gui.components.ActionButton;
+import com.cylorun.gui.components.BooleanOptionField;
+import com.cylorun.gui.components.MultiChoiceOptionField;
+import com.cylorun.gui.components.NumberOptionField;
+import com.cylorun.gui.components.TextOptionField;
+import com.cylorun.utils.APIUtil;
 
 public class TrackerFrame extends JFrame implements WindowListener {
 
     private static TrackerFrame instance;
-    private JTextArea logArea;
+    private JTextPane logArea;
     private JPanel editorPanel;
     public JTabbedPane tabbedPane;
     private Container initialView;
@@ -39,9 +64,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
     }
 
     private JScrollPane getTextArea() {
-        this.logArea = new JTextArea();
+        this.logArea = new JTextPane();
         this.logArea.setEditable(false);
-        this.logArea.setLineWrap(true);
 
         return new JScrollPane(this.logArea);
     }
@@ -166,7 +190,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 if (res) {
                     JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    Tracker.log(Level.INFO, "Valid API Url");
+                    Tracker.log(Level.INFO, "Valid API URL");
                     JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
                 }
             }, "ApiUrlVerification").start()
@@ -181,17 +205,12 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Generate World Map", options.generate_chunkmap, (val) -> {
-            options.generate_chunkmap = val;
-            TrackerOptions.save();
-        }));
-
         advancedPanel.add(new BooleanOptionField("Experimental Tracking", options.use_experimental_tracking, (val) -> {
             options.use_experimental_tracking = val;
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Upload to a remote server", options.upload_remote_server, (val) -> {
+        advancedPanel.add(new BooleanOptionField("Upload to website", options.upload_remote_server, (val) -> {
             boolean b = val != options.upload_remote_server;
             options.upload_remote_server = val;
             TrackerOptions.save();
@@ -213,8 +232,18 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.repaint();
     }
 
-    public void appendLog(Object o) {
-        SwingUtilities.invokeLater(() -> this.logArea.append(o.toString()));
+    public void appendLog(String msg, String color) {
+        SwingUtilities.invokeLater(() -> {
+            StyleContext context = new StyleContext();
+            Style style = context.addStyle("Color", null);
+            StyleConstants.setForeground(style, Color.decode(color));
+            try {
+                this.logArea.getStyledDocument().insertString(this.logArea.getStyledDocument().getLength(), msg, style);
+            } 
+            catch (BadLocationException e) {
+                e.printStackTrace();
+            }  
+        });
     }
 
     public void open() {

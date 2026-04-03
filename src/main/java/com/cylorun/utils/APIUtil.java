@@ -1,15 +1,25 @@
 package com.cylorun.utils;
 
-import com.cylorun.Tracker;
-import com.cylorun.mcinstance.Run;
-import com.cylorun.TrackerOptions;
-import com.google.gson.Gson;
-import okhttp3.*;
-import org.apache.logging.log4j.Level;
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.Level;
+
+import com.cylorun.Tracker;
+import com.cylorun.TrackerOptions;
+import com.cylorun.mcinstance.Run;
+import com.google.gson.Gson;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Builder;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class APIUtil {
 
@@ -17,15 +27,26 @@ public class APIUtil {
         TrackerOptions options = TrackerOptions.getInstance();
         OkHttpClient client = new OkHttpClient();
 
-        String bodyJson = getRunJson(run);
-        Tracker.log(Level.DEBUG, "Uploading " + bodyJson);
+        // String bodyJson = getRunJson(run);
+        Tracker.log(Level.DEBUG, "Uploading run for world: " + run.worldFile.getName());
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
+        Builder bodyBuilder = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("seed", String.valueOf(run.worldFile.getSeed()))
+            .addFormDataPart("record", "record.json", RequestBody.create(MediaType.parse("application/json"), run.worldFile.getRecordPath().toFile()));
+
+        if(run.worldFile.isHermesAvailable) {
+            bodyBuilder.addFormDataPart("playlog", "play.log", RequestBody.create(MediaType.parse("text/plain"), run.worldFile.getHermesPath().resolve("play.log").toFile()));
+            for (File ghost : run.worldFile.getHermesPath().resolve("ghosts").toFile().listFiles()) {
+                bodyBuilder.addFormDataPart("ghost", ghost.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), ghost));
+            }
+        }
+
         Request request = new Request.Builder()
                 .url(TrackerOptions.getInstance().api_url + "/runs")
-                .post(requestBody)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("authorization", options.api_key)
+                .addHeader("Content-Type", "multipart/form-data")
+                .post(bodyBuilder.build())
+                .addHeader("Authorization", options.api_key)
                 .build();
 
         Response response;
@@ -52,6 +73,18 @@ public class APIUtil {
             Tracker.log(Level.WARN, "Invalid API key or none provided, will not upload run");
             return;
         }
+
+        // If we're running with Hermes, wait until the world closes and the play log is available before trying to upload
+        Path hermesRoot = run.worldFile.getInstanceRoot().resolve("hermes");
+        if(hermesRoot.resolve("alive").toFile().exists()) {
+            if(!run.worldFile.isHermesAvailable) {
+                Tracker.log(Level.DEBUG, "World is still open, waiting to upload...");
+                Tracker.getExecutor().schedule(new Runnable() { public void run() { tryUploadRun(run); } }, 5, TimeUnit.SECONDS);
+                return;
+            }
+        }
+
+        Tracker.log(Level.DEBUG, "Preparing to upload run to website...");
 
         int retries = 0;
         int code;
@@ -87,7 +120,7 @@ public class APIUtil {
 
     public static boolean isValidKey(String key) {
         if (!isValidApiUrl(TrackerOptions.getInstance().api_url)) {
-            Tracker.log(Level.WARN, "Provided API url is invalid, can't verify key");
+            Tracker.log(Level.WARN, "Provided API URL is invalid, can't verify key");
             return false;
         }
 
@@ -121,7 +154,7 @@ public class APIUtil {
 
     public static boolean isValidApiUrl(String url) {
         if (url == null) {
-            Tracker.log(Level.WARN, "No API Url provided");
+            Tracker.log(Level.WARN, "No API URL provided");
             return false;
         }
 

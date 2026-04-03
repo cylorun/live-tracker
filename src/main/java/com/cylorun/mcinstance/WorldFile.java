@@ -1,21 +1,5 @@
 package com.cylorun.mcinstance;
 
-import com.cylorun.Tracker;
-import com.cylorun.mcinstance.live.DistanceTracker;
-import com.cylorun.mcinstance.live.EventTracker;
-import com.cylorun.mcinstance.live.HungerResetHandler;
-import com.cylorun.mcinstance.live.PathTracker;
-import com.cylorun.mcinstance.logs.LogEventListener;
-import com.cylorun.mcinstance.logs.LogHandler;
-import com.cylorun.mcinstance.world.WorldEventHandler;
-import com.cylorun.mcinstance.world.WorldEventListener;
-import com.cylorun.TrackerOptions;
-import com.cylorun.utils.ExceptionUtil;
-import com.cylorun.utils.Vec2i;
-import kaptainwutax.mcutils.state.Dimension;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.Level;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +10,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Level;
+
+import com.cylorun.Tracker;
+import com.cylorun.TrackerOptions;
+import com.cylorun.mcinstance.live.DistanceTracker;
+import com.cylorun.mcinstance.live.EventTracker;
+import com.cylorun.mcinstance.live.HungerResetHandler;
+import com.cylorun.mcinstance.live.PathTracker;
+import com.cylorun.mcinstance.logs.LogEventListener;
+import com.cylorun.mcinstance.logs.LogHandler;
+import com.cylorun.mcinstance.world.WorldEventHandler;
+import com.cylorun.mcinstance.world.WorldEventListener;
+import com.cylorun.utils.ExceptionUtil;
+import com.cylorun.utils.Vec2i;
+
+import kaptainwutax.mcutils.state.Dimension;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
     private Runnable completionHandler;
@@ -41,6 +43,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public final Inventory inv;
     public boolean track = true;
     public boolean finished = false;
+    public boolean isHermesAvailable = false;
 
     public WorldFile(String path) {
         super(path);
@@ -78,9 +81,24 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
     }
 
+    public Path getHermesPath() {
+        return Paths.get(this.getAbsolutePath()).resolve(("hermes"));
+    }
+
+    public Path getInstanceRoot() {
+        return Paths.get(this.getAbsolutePath()).getParent().getParent();
+    }
+
     public long getSeed() {
         try {
-            return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+            String version = NBTReader.from(this).get(NBTReader.VERSION_PATH).replaceAll("\"", ""); // this wraps the string in "" I guess
+
+            if(version.startsWith("1.")) {
+                return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+            } else {
+                return Long.parseLong(NBTReader.from(Paths.get(this.getPath(), "/data/minecraft/world_gen_settings.dat")).get(NBTReader.MODERN_SEED_PATH));
+            }
+
         } catch (NumberFormatException | NullPointerException e) {
             Tracker.log(Level.WARN, "Failed to get the seed");
             return -1;
@@ -173,11 +191,18 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
             if (this.track) {
                 if (e.type.equals(SpeedrunEvent.SpeedrunEventType.LEAVE_WORLD)) {
                     this.track = false;
+                    if(this.finished) this.isHermesAvailable = true;
                 }
 
                 if (e.type.equals(SpeedrunEvent.SpeedrunEventType.CREDITS)) {
                     this.onCompletion();
                 }
+            }
+        }
+        else if(this.track) {
+            if (e.type.equals(SpeedrunEvent.SpeedrunEventType.LEAVE_WORLD)) {
+                Tracker.log(Level.DEBUG, "Left world, preparing for upload to website...");
+                this.isHermesAvailable = true;
             }
         }
     }

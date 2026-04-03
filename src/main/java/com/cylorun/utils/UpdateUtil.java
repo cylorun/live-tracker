@@ -71,7 +71,7 @@ public class UpdateUtil {
     public static void checkForUpdates(String currVersion) {
         try {
             if (shouldUpdate(currVersion)) {
-                int choice = JOptionPane.showConfirmDialog(null, "A new uopdate was found, want to update?", "New update", JOptionPane.YES_NO_OPTION);
+                int choice = JOptionPane.showConfirmDialog(null, "A new update was found, want to update?", "New update", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     GHAsset latestJar = getLatestJar();
                     UpdateUtil.update(latestJar);

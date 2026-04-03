@@ -1,18 +1,5 @@
 package com.cylorun;
 
-import com.cylorun.gui.TrackerFrame;
-import com.cylorun.mcinstance.Run;
-import com.cylorun.mcinstance.WorldFile;
-import com.cylorun.mcinstance.world.WorldCreationEventHandler;
-import com.cylorun.gsheets.GoogleSheetsClient;
-import com.cylorun.map.ChunkMap;
-import com.cylorun.utils.APIUtil;
-import com.cylorun.utils.ExceptionUtil;
-import com.cylorun.utils.LogReceiver;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -20,12 +7,28 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.cylorun.gsheets.GoogleSheetsClient;
+import com.cylorun.gui.TrackerFrame;
+import com.cylorun.mcinstance.Run;
+import com.cylorun.mcinstance.WorldFile;
+import com.cylorun.mcinstance.world.WorldCreationEventHandler;
+import com.cylorun.utils.APIUtil;
+import com.cylorun.utils.ExceptionUtil;
+import com.cylorun.utils.LogReceiver;
 
 
 public class Tracker {
 
     public static final String VERSION = Tracker.class.getPackage().getImplementationVersion() == null ? "DEV" : Tracker.class.getPackage().getImplementationVersion();
     private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
+    private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
     public static void run() {
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
@@ -88,6 +91,7 @@ public class Tracker {
                 }
 
                 APIUtil.tryUploadRun(run);
+
                 if (options.upload_sheets) {
                     try {
                         GoogleSheetsClient.appendRowTop(run);
@@ -99,14 +103,6 @@ public class Tracker {
                         Tracker.log(Level.ERROR, "No provided sheet id or name");
                     }
                 }
-            }
-
-            if (options.generate_chunkmap) {
-                new Thread(() -> {
-                    ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
-                    cm.generate();
-                    cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER).generate();
-                }, "ChunkMapGen").start();
             }
         });
     }
@@ -130,5 +126,9 @@ public class Tracker {
     public static void log(Level level, Object o) {
         LOGGER.log(level, o);
         LogReceiver.log(level, o);
+    }
+
+    public static ScheduledExecutorService getExecutor() {
+        return EXECUTOR;
     }
 }

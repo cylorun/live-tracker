@@ -19,6 +19,9 @@ public class NBTReader {
     public static String[] PLAYER_DIMENSION = {"value", "Data", "value", "Player", "value", "Dimension", "value"};
     public static String[] PLAYER_POS = {"value", "Data", "value", "Player", "value", "Pos", "value", "list"};
 
+    public static String[] VERSION_PATH = {"value", "Data", "value", "Version", "value", "Name", "value"};
+    public static String[] MODERN_SEED_PATH = {"value", "data", "value", "seed", "value"};
+
     private NBTReader(Path path) {
         this.path = path;
     }

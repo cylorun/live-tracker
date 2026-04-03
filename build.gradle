@@ -49,8 +49,14 @@ dependencies {
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev493-1.23.0'
 
-    implementation 'com.github.KaptainWutax:SEED:master-SNAPSHOT'
-    implementation 'com.github.hube12:SEED:0dd874f0069cc4be9f41f0c3238f7694f982e60a'
+    // implementation 'com.github.KaptainWutax:SEED:master-SNAPSHOT'
+    // implementation 'com.github.hube12:SEED:0dd874f0069cc4be9f41f0c3238f7694f982e60a'
+    implementation 'com.github.KaptainWutax:SeedUtils:master-SNAPSHOT'
+    implementation 'com.github.KaptainWutax:MCUtils:master-SNAPSHOT'
+    implementation 'com.github.KaptainWutax:BiomeUtils:master-SNAPSHOT'
+    implementation 'com.github.KaptainWutax:TerrainUtils:main-SNAPSHOT'
+    implementation 'com.github.KaptainWutax:FeatureUtils:master-SNAPSHOT'
+    // for some reason jitpack couldn't figure out SEED
 
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.3'
 }
